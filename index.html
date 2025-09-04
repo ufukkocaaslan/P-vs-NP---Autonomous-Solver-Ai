@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>P vs NP Autonomous Solver</title>
+    <link rel="stylesheet" href="index.css" />
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.25.1/full/pyodide.js"></script>
+    <script type="importmap">
+{
+  "imports": {
+    "safevalues/dom": "https://cdn.jsdelivr.net/npm/safevalues@1.2.0/dist/mjs/dom/index.js",
+    "safevalues/": "https://esm.sh/safevalues@^1.2.0/",
+    "safevalues": "https://cdn.jsdelivr.net/npm/safevalues@1.2.0/dist/mjs/index.js",
+    "markdown-it": "https://esm.sh/markdown-it@^14.1.0",
+    "@google/genai": "https://esm.sh/@google/genai",
+    "vis-network/standalone/esm/vis-network.js": "https://esm.sh/vis-network@9.1.9/standalone/esm/vis-network.js",
+    "vis-network/": "https://aistudiocdn.com/vis-network@^10.0.1/",
+    "idb": "https://esm.sh/idb@8",
+    "vite": "https://aistudiocdn.com/vite@^7.1.4"
+  }
+}
+</script>
+  <link rel="stylesheet" href="/index.css">
+</head>
+  <body>
+    <div id="app-background"></div>
+    <header class="app-header">
+      <div class="header-left">
+        <h1 id="notebook-title">P vs NP &mdash; Autonomous Solver</h1>
+        <div class="solver-status">
+          <div class="status-indicator"></div>
+          <span id="solver-status-text">System Idle</span>
+          <span id="cycle-count-wrapper">Cycle: <span id="cycle-count">0</span></span>
+          <span id="stagnation-wrapper">Stagnation: <span id="stagnation-count">0</span></span>
+        </div>
+        <div id="persistence-status" class="persistence-status" title="Mission state is saved locally after each cycle.">
+            <i class="fa-solid fa-database"></i>
+            <span id="persistence-text">No Saved State</span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="resume-btn" title="Resume Last Mission" disabled>
+          <i class="fa-solid fa-play-circle"></i>
+          <span>Resume Mission</span>
+        </button>
+        <button id="new-btn" title="Start New Mission">
+          <i class="fa-solid fa-file-circle-plus"></i>
+          <span>New Mission</span>
+        </button>
+        <button id="download-log-btn" title="Download Mission Logs">
+          <i class="fa-solid fa-download"></i>
+          <span>Download Logs</span>
+        </button>
+        <button id="toggle-search-btn" class="primary-action">
+          <i class="fa-solid fa-play"></i>
+          <span>Begin Analysis</span>
+        </button>
+      </div>
+    </header>
+    <main id="main-container">
+      <div class="column" id="column-specialist-1">
+        <div class="column-header" data-tooltip="Analyzes the problem from the perspective of computational complexity, algorithms, and logic gates." title="Analyzes the problem from the perspective of computational complexity, algorithms, and logic gates.">
+          <i class="fa-solid fa-calculator"></i>
+          <h3>Specialist 1: Complexity</h3>
+        </div>
+        <div id="notebook-specialist-1" class="notebook"></div>
+      </div>
+      <div class="column" id="column-specialist-2">
+        <div class="column-header" data-tooltip="Attacks the problem by exploring connections to abstract algebra, topology, and geometric structures." title="Attacks the problem by exploring connections to abstract algebra, topology, and geometric structures.">
+          <i class="fa-solid fa-infinity"></i>
+          <h3>Specialist 2: Algebra</h3>
+        </div>
+        <div id="notebook-specialist-2" class="notebook"></div>
+      </div>
+       <div class="column" id="column-specialist-3">
+        <div class="column-header" data-tooltip="Attempts to construct a formal, axiomatic proof using a language like Lean/Coq." title="Attempts to construct a formal, axiomatic proof using a language like Lean/Coq.">
+          <i class="fa-solid fa-square-root-variable"></i>
+          <h3>Specialist 3: Formal Systems</h3>
+        </div>
+        <div id="notebook-specialist-3" class="notebook"></div>
+      </div>
+      <div class="column" id="column-specialist-4">
+        <div class="column-header" data-tooltip="Scans the web for the latest human research on P vs NP to keep the collective informed." title="Scans the web for the latest human research on P vs NP to keep the collective informed.">
+          <i class="fa-solid fa-book-open"></i>
+          <h3>Specialist 4: Literature Watcher</h3>
+        </div>
+        <div id="notebook-specialist-4" class="notebook"></div>
+      </div>
+      <div class="column" id="column-specialist-5">
+        <div class="column-header" data-tooltip="Critiques and attempts to refute hypotheses from other specialists to ensure intellectual rigor." title="Critiques and attempts to refute hypotheses from other specialists to ensure intellectual rigor.">
+          <i class="fa-solid fa-gavel"></i>
+          <h3>Specialist 5: The Skeptic</h3>
+        </div>
+        <div id="notebook-specialist-5" class="notebook"></div>
+      </div>
+       <div class="column" id="column-specialist-6">
+        <div class="column-header" data-tooltip="Generates conceptual leaps and 'Eureka!' moments when the collective is at an impasse." title="Generates conceptual leaps and 'Eureka!' moments when the collective is at an impasse.">
+          <i class="fa-solid fa-lightbulb"></i>
+          <h3>Specialist 6: The Intuitionist</h3>
+        </div>
+        <div id="notebook-specialist-6" class="notebook"></div>
+      </div>
+      <div class="column" id="column-synthesizer">
+        <div class="column-header" data-tooltip="The central strategist. Analyzes all work, manages agents, and synthesizes findings to guide the mission." title="The central strategist. Analyzes all work, manages agents, and synthesizes findings to guide the mission.">
+          <i class="fa-solid fa-brain"></i>
+          <h3>Metacognitive Architect</h3>
+        </div>
+        <div id="architect-dashboard" class="architect-dashboard">
+          <div class="dashboard-section">
+              <div class="dashboard-header">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+                <h4>Strategic Focus History</h4>
+              </div>
+              <div id="focus-history-list" class="focus-history-list"></div>
+              <div id="bias-warning" class="bias-warning hidden"></div>
+          </div>
+          <div class="dashboard-section">
+              <div class="dashboard-header">
+                <i class="fa-solid fa-chart-simple"></i>
+                <h4>Agent Performance (Avg. Promise)</h4>
+              </div>
+              <ul id="agent-performance-list" class="agent-performance-list">
+                  <!-- Performance items will be injected here -->
+              </ul>
+          </div>
+        </div>
+        <div id="notebook-synthesizer" class="notebook"></div>
+      </div>
+      <div class="column" id="column-knowledge-graph">
+        <div class="column-header" data-tooltip="A real-time visualization of all theorems, hypotheses, and their logical relationships." title="A real-time visualization of all theorems, hypotheses, and their logical relationships.">
+          <i class="fa-solid fa-diagram-project"></i>
+          <h3>Knowledge Graph</h3>
+        </div>
+        <div id="active-research-vector-header">
+          <div class="mission-header"><i class="fa-solid fa-route"></i> ACTIVE RESEARCH VECTOR</div>
+          <div id="active-research-vector-text">Awaiting strategic plan...</div>
+        </div>
+        <div id="current-mission-objective">
+          <div class="mission-header"><i class="fa-solid fa-bullseye"></i> ACTIVE MISSION OBJECTIVE</div>
+          <div id="mission-text">Awaiting directive from Lead Synthesizer...</div>
+        </div>
+        <div id="knowledge-graph-visualizer"></div>
+      </div>
+      <!-- Container for dynamically added specialists -->
+      <div id="dynamic-specialists-container"></div>
+    </main>
+    <main id="breakthrough-container" class="hidden">
+      <div id="breakthrough-particles"></div>
+      <div class="breakthrough-content">
+        <div class="breakthrough-header">
+          <h1><i class="fa-solid fa-trophy"></i> BREAKTHROUGH ACHIEVED!</h1>
+          <p>The P vs NP problem has been solved.</p>
+        </div>
+        <div id="proof-report-container" class="proof-report">
+          <!-- The final proof will be rendered here -->
+        </div>
+        <div class="breakthrough-actions">
+          <button id="download-proof-btn">
+            <i class="fa-solid fa-download"></i> Download Full Proof (.md)
+          </button>
+          <button id="restart-btn-breakthrough">
+            <i class="fa-solid fa-rotate-right"></i> Start New Mission
+          </button>
+        </div>
+      </div>
+    </main>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>

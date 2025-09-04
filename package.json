@@ -1,0 +1,25 @@
+
+{
+  "name": "p-vs-np-autonomous-solver",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "An open-source, multi-agent AI collective designed to solve the P vs NP problem.",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@google/genai": "^0.1.0",
+    "idb": "^8.0.0",
+    "markdown-it": "^14.1.0",
+    "safevalues": "^1.2.0",
+    "vis-network": "^9.1.9"
+  },
+  "devDependencies": {
+    "@types/markdown-it": "^14.1.1",
+    "typescript": "^5.2.2",
+    "vite": "^5.2.0"
+  }
+}
